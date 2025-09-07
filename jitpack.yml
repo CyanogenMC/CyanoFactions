@@ -1,5 +1,0 @@
-jdk:
-  - openjdk21
-
-before_install:
-  - cd improved-factions
