@@ -32,6 +32,9 @@ class ImprovedFactionsConfig(
         var maxClaimRadius: Int = 10,
         var pluginPrefix: String =
                 "<hover:show_text:'<dark_gray>Author:</dark_gray> <aqua>Tobero</aqua>'><dark_gray>[</dark_gray><yellow>CF</yellow><dark_gray>]</dark_gray></hover>",
+        var titleFadeInTicks: Int = 10,
+        var titleStayTicks: Int = 40,
+        var titleFadeOutTicks: Int = 10,
 ) : PluginConfig() {
 
     override fun reload(plugin: ImprovedFactionsPlugin, config: FileConfiguration) {
@@ -62,6 +65,9 @@ class ImprovedFactionsConfig(
                 config.getLong("performance.decorative-particles.tick-speed", particleTickSpeed)
         maxClaimRadius = config.getInt("factions.max-claim-radius", maxClaimRadius)
         pluginPrefix = config.getString("plugin-prefix") ?: pluginPrefix
+        titleFadeInTicks = config.getInt("title-timing.fade-in-ticks", titleFadeInTicks)
+        titleStayTicks = config.getInt("title-timing.stay-ticks", titleStayTicks)
+        titleFadeOutTicks = config.getInt("title-timing.fade-out-ticks", titleFadeOutTicks)
 
         getZones(plugin, config)
     }

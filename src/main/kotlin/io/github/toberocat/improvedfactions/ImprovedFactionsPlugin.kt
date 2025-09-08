@@ -35,7 +35,7 @@ open class ImprovedFactionsPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        logger.info("ImprovedFactions v${BuildConfig.VERSION_NAME} build ${BuildConfig.BUILD_INCREMENT} by Tobero (Tobias Madlberger) is disabling.")
+        logger.info("CyanoFactions v${BuildConfig.VERSION} is disabling.")
         moduleManager.disableModules()
     }
 

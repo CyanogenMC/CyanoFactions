@@ -1,8 +1,7 @@
 #
 # -------- { General Settings } --------
 #
-update-checker: true
-config-version: ${buildIncrement}
+config-version: ${version}
 
 # Plugin prefix for messages - supports MiniMessage format
 plugin-prefix: "[</dark_gray><yellow>CF</yellow><dark_gray>]"
@@ -467,6 +466,13 @@ default-placeholders:
 
 # This option decides if what kind of notification the players will receive when a certain event happens (Teleport, Territory change, etc)
 event-display-location: "TITLE" # Options are: TITLE, CHAT, ACTIONBAR
+
+# Title timing configuration (only applies when event-display-location is set to TITLE)
+# Values are in ticks (20 ticks = 1 second)
+title-timing:
+  fade-in-ticks: 10   # How long the title takes to fade in (default: 0.5 seconds)
+  stay-ticks: 20      # How long the title stays visible (default: 1 second, reduced from 2 seconds)
+  fade-out-ticks: 10  # How long the title takes to fade out (default: 0.5 seconds)
 
 # The maximum amount of suggestions that will be displayed when a player types a command. If set to 0, the suggestions will be disabled
 # This may have a performance impact on servers
