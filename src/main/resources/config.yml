@@ -4,7 +4,7 @@
 config-version: ${version}
 
 # Plugin prefix for messages - supports MiniMessage format
-plugin-prefix: "[</dark_gray><yellow>CF</yellow><dark_gray>]"
+plugin-prefix: "<dark_gray>[<yellow>CF</yellow><dark_gray>]"
 
 # Configure an mysql connection. If no connection was established, the plugin uses sqlite.
 # This allows to use this plugin without a mysql server
