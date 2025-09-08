@@ -52,13 +52,14 @@ abstract class PowerCommand : PowerCommandContext() {
         val claimKeep = PowerRaidsModule.powerModuleHandle.getClaimMaintenanceCost(faction)
         val currentlyAccumulated = PowerRaidsModule.powerModuleHandle.getPowerAccumulated(activeAccumulation, inactiveAccumulation)
         val nextClaimCost = PowerRaidsModule.powerModuleHandle.getNextClaimCost(faction)
+        val timeUnitString = PowerRaidsModule.config.getAccumulationTimeString()
 
         sender.sendCommandResult(details("Power", stringify(faction.accumulatedPower.toDouble())))
         sender.sendCommandResult(details("Max Power", stringify(faction.maxPower.toDouble())))
-        sender.sendCommandResult(details("Active Accumulation", stringify(activeAccumulation)))
-        sender.sendCommandResult(details("Inactive Accumulation", stringify(inactiveAccumulation)))
-        sender.sendCommandResult(details("Claim Keep", stringify(claimKeep)))
-        sender.sendCommandResult(details("Current Accumulation", stringify(currentlyAccumulated)))
+        sender.sendCommandResult(details("Active Accumulation", "${stringify(activeAccumulation)} $timeUnitString"))
+        sender.sendCommandResult(details("Inactive Accumulation", "${stringify(inactiveAccumulation)} $timeUnitString"))
+        sender.sendCommandResult(details("Claim Keep", "${stringify(claimKeep)} $timeUnitString"))
+        sender.sendCommandResult(details("Current Accumulation", "${stringify(currentlyAccumulated)} $timeUnitString"))
 
         return details("Next Claim Cost", stringify(nextClaimCost.toDouble()))
     }

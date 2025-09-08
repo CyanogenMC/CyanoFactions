@@ -9,6 +9,8 @@ import kotlin.math.abs
 data class PowerManagementConfig(
     var baseMemberConstant: Double = 50.0,
     var accumulationTickDelay: Long = 1,
+    var accumulationTimeUnit: TimeUnit = TimeUnit.HOURS,
+    var accumulationTimeValue: Long = 1,
     var inactiveMilliseconds: Long = 1,
     var baseAccumulation: Int = 0,
     var activeAccumulationExponent: Double = 2.0,
@@ -26,8 +28,11 @@ data class PowerManagementConfig(
     private val configPath = "factions.power-management"
     fun reload(config: FileConfiguration) {
         baseMemberConstant = config.getUnsignedDouble("$configPath.base-member-constant", baseMemberConstant)
-        accumulationTickDelay = (config.getEnum<TimeUnit>("$configPath.accumulation-rate.unit")
-            ?: TimeUnit.HOURS).toSeconds(abs(config.getLong("$configPath.accumulation-rate.value", 1))) * 20
+        
+        accumulationTimeUnit = config.getEnum<TimeUnit>("$configPath.accumulation-rate.unit") ?: TimeUnit.HOURS
+        accumulationTimeValue = abs(config.getLong("$configPath.accumulation-rate.value", 1))
+        accumulationTickDelay = accumulationTimeUnit.toSeconds(accumulationTimeValue) * 20
+        
         baseAccumulation = config.getInt("$configPath.base-accumulation", baseAccumulation)
         activeAccumulationExponent =
             config.getUnsignedDouble("$configPath.accumulation-active-exponent", activeAccumulationExponent)
@@ -49,5 +54,16 @@ data class PowerManagementConfig(
         siegeClaimRecoverySpeed =
             config.getUnsignedDouble("$configPath.siege.claim-recovery-speed", siegeClaimRecoverySpeed)
         allowOverclaim = config.getBoolean("$configPath.allow-overclaim", allowOverclaim)
+    }
+    
+    fun getAccumulationTimeString(): String {
+        val unitName = when (accumulationTimeUnit) {
+            TimeUnit.SECONDS -> if (accumulationTimeValue == 1L) "sec" else "sec"
+            TimeUnit.MINUTES -> if (accumulationTimeValue == 1L) "min" else "min"
+            TimeUnit.HOURS -> if (accumulationTimeValue == 1L) "hr" else "hr"
+            TimeUnit.DAYS -> if (accumulationTimeValue == 1L) "day" else "days"
+            else -> accumulationTimeUnit.name.lowercase()
+        }
+        return if (accumulationTimeValue == 1L) "/$unitName" else "/${accumulationTimeValue}$unitName"
     }
 }

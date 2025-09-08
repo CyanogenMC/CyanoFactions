@@ -247,7 +247,23 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
 
     fun claim(chunk: Chunk, announce: Boolean = true): FactionClaim {
         val claim = chunk.getFactionClaim()
-        if (!canClaimInWorld(chunk.world.name) || claim?.canClaim() == false) throw CantClaimThisChunkException(chunk)
+        
+        // Check if world allows claiming
+        if (!canClaimInWorld(chunk.world.name)) throw CantClaimThisChunkException(chunk)
+        
+        // Check if chunk is already claimed by this faction
+        if (claim != null && claim.factionId == id.value) {
+            throw ChunkAlreadyOwnedException(chunk)
+        }
+        
+        // Check if chunk is already claimed by another faction
+        if (claim != null && claim.factionId != noFactionId) {
+            throw ChunkAlreadyClaimedException(chunk)
+        }
+        
+        // Check if claim zone allows claiming
+        if (claim?.canClaim() == false) throw CantClaimThisChunkException(chunk)
+        
         powerRaidModule().powerModuleHandle.claimChunk(chunk, this)
 
         val factionId = id.value
