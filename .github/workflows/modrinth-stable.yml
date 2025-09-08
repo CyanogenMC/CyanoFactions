@@ -42,7 +42,6 @@ jobs:
           github-generate-changelog: true
           github-prerelease: false
           github-commitish: main
-          github-discussion: Announcements
           github-token: ${{ secrets.GB_TOKEN }}
 
           loaders: |
