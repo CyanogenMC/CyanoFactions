@@ -10,24 +10,8 @@ plugins {
     id("com.github.ben-manes.versions") version "0.52.0"
 }
 
-val versionPropsFile = file("version.properties")
-val versionProps = Properties()
-
-if (versionPropsFile.exists()) {
-    versionProps.load(versionPropsFile.inputStream())
-}
-
-val buildIncrement = (versionProps["buildIncrement"]?.toString()?.toInt() ?: 1) + 1
-val versionName = versionProps["versionName"]!!.toString()
-
-versionProps["buildIncrement"] = buildIncrement.toString()
-versionProps["versionName"] = versionName
-
-versionProps.store(versionPropsFile.outputStream(), null)
-
-
 group = "io.github.toberocat.improved-factions"
-version = versionName
+version = "2.3.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -127,7 +111,7 @@ tasks {
 
     processResources {
         filesMatching("**/*.yml") {
-            expand("buildIncrement" to buildIncrement)
+            expand("version" to project.version)
         }
     }
 
@@ -183,9 +167,7 @@ val generateBuildConfig by tasks.registering {
             file.writeText(
                 """
                 object BuildConfig {
-                    const val VERSION_NAME = "${project.version}"
-                    const val BUILD_INCREMENT = $buildIncrement
-                    const val VERSION = "${project.version}.$buildIncrement"
+                    const val VERSION = "${project.version}"
                 }
                 """.trimIndent()
             )
