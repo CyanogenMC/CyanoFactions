@@ -71,7 +71,11 @@ object BaseModule : Module {
     @PapiPlaceholder("name", MODULE_NAME, "The name of the faction")
     @PapiPlaceholder("rank", MODULE_NAME, "The rank of the player in the faction")
     @PapiPlaceholder("join_mode", MODULE_NAME, "The join mode of the faction")
-    @PapiPlaceholder("in_faction", MODULE_NAME, "Returns true if the player is in a faction, false otherwise")
+    @PapiPlaceholder(
+            "in_faction",
+            MODULE_NAME,
+            "Returns true if the player is in a faction, false otherwise"
+    )
     override fun onPlaceholder(placeholders: HashMap<String, (player: OfflinePlayer) -> String?>) {
         placeholders["owner"] = { it.factionUser().faction()?.owner?.toOfflinePlayer()?.name }
         placeholders["name"] = { it.factionUser().faction()?.name }

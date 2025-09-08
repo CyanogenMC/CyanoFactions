@@ -1,9 +1,9 @@
-name: ImprovedFactions
+name: CyanoFactions
 version: '${version}'
 main: io.github.toberocat.improvedfactions.ImprovedFactionsPlugin
 api-version: '1.18'
 softdepend: [ PlaceholderAPI, dynmap, GuiEngine ]
-author: Tobero
+author: EtcherFX
 commands:
   factions:
     aliases: [ "f", "fac", "faction" ]
