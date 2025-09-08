@@ -29,11 +29,10 @@ class ImprovedFactionsConfig(
         var guestRankName: String = "Guest",
         var hideDecorativeParticles: Boolean = false,
         var particleTickSpeed: Long = 1,
-        var maxClaimRadius: Int = 10,
-        var pluginPrefix: String =
-                "<hover:show_text:'<dark_gray>Author:</dark_gray> <aqua>Tobero</aqua>'><dark_gray>[</dark_gray><yellow>CF</yellow><dark_gray>]</dark_gray></hover>",
+        var maxClaimRadius: Int = 5,
+        var pluginPrefix: String = "[</dark_gray><yellow>CF</yellow><dark_gray>]",
         var titleFadeInTicks: Int = 10,
-        var titleStayTicks: Int = 40,
+        var titleStayTicks: Int = 20,
         var titleFadeOutTicks: Int = 10,
 ) : PluginConfig() {
 
