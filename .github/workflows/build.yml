@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      version: ${{ steps.version_info.outputs.version }}
+      git_hash: ${{ steps.version_info.outputs.git_hash }}
 
     steps:
       - name: Checkout repository
@@ -26,13 +29,23 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+      - name: Extract version and git info
+        id: version_info
+        run: |
+          VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
+          GIT_HASH=$(git rev-parse --short HEAD)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "git_hash=$GIT_HASH" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Git Hash: $GIT_HASH"
+
       - name: Build plugin
         run: ./gradlew build --no-daemon
 
       - name: Upload CyanoFactions JAR
         uses: actions/upload-artifact@v4
         with:
-          name: CyanoFactions-${{ github.run_number }}
+          name: CyanoFactions-v${{ steps.version_info.outputs.version }}-${{ steps.version_info.outputs.git_hash }}
           path: build/libs/*.jar
           retention-days: 30
           compression-level: 9
@@ -41,28 +54,31 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-${{ github.run_number }}
+          name: Test Results
           path: |
             build/test-results/**/*.xml
             build/reports/tests/
           retention-days: 14
 
-  summary:
+  build-summary:
     runs-on: ubuntu-latest
     needs: build
     if: always()
     steps:
-      - name: Build Summary
+      - name: Generate Build Summary
         run: |
           echo "## 🏗️ CyanoFactions Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Build Status:** ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ needs.build.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Git Hash:** ${{ needs.build.outputs.git_hash }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ needs.build.result }}" == "success" ]; then
             echo "✅ **Plugin built successfully!**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "📦 Download the JAR from the artifacts section above." >> $GITHUB_STEP_SUMMARY
+            echo "📦 **Artifact Name:** CyanoFactions-v${{ needs.build.outputs.version }}-${{ needs.build.outputs.git_hash }}" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Build failed!**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
