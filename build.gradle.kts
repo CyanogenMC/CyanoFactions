@@ -62,7 +62,8 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
 
     // Other dependencies
-    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.datetime.jvm)
     implementation(libs.toberocore)
     implementation(libs.sqlite.jdbc)
@@ -104,9 +105,6 @@ tasks.withType<KspTask>().configureEach {
 
 tasks.shadowJar {
     archiveFileName.set("${project.name}-${project.version}.jar")
-    if (System.getenv("CI") == null && System.getenv("JITPACK") == null) {
-        destinationDirectory.set(file("../server/plugins"))
-    }
     relocate("com.fasterxml.jackson", "io.github.toberocat.relocated.jackson")
     relocate("net.kyori", "io.github.toberocat.relocated.kyori")
     relocate("dev.s7a", "io.github.toberocat.relocated.base64itemstack")
