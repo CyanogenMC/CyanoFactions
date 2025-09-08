@@ -65,8 +65,8 @@ abstract class PowerCommand : PowerCommandContext() {
 
     private fun details(key: String, value: String, cmd: String = "") = powerDetail(
         "cmd" to cmd,
-        "key" to key,
-        "value" to value
+        "powerType" to key,
+        "power" to value
     )
 
     private fun stringify(value: Double) = (round(value * 100) / 100).toString()
