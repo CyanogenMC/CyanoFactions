@@ -13,10 +13,6 @@ jobs:
     permissions:
       contents: read
 
-    outputs:
-      version: ${{ steps.get-version.outputs.version }}
-      artifact-name: ${{ steps.get-version.outputs.artifact-name }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,51 +23,17 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-home-cache-cleanup: true
-
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Get version information
-        id: get-version
-        run: |
-          VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
-          COMMIT_SHA=$(git rev-parse --short HEAD)
-          ARTIFACT_NAME="CyanoFactions-${VERSION}-${COMMIT_SHA}"
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "artifact-name=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
-          echo "Plugin version: ${VERSION}"
-          echo "Artifact name: ${ARTIFACT_NAME}"
-
-      - name: Run tests
-        run: ./gradlew test --no-daemon --continue
-
-      - name: Build plugin JAR
-        run: ./gradlew shadowJar --no-daemon
-
-      - name: Verify JAR was created
-        run: |
-          if [ ! -f "build/libs/CyanoFactions-${{ steps.get-version.outputs.version }}.jar" ]; then
-            echo "❌ JAR file not found!"
-            ls -la build/libs/
-            exit 1
-          fi
-          echo "✅ JAR file created successfully"
-
-      - name: Rename JAR with commit info
-        run: |
-          cd build/libs
-          mv "CyanoFactions-${{ steps.get-version.outputs.version }}.jar" "${{ steps.get-version.outputs.artifact-name }}.jar"
-          echo "✅ JAR renamed to: ${{ steps.get-version.outputs.artifact-name }}.jar"
+      - name: Build plugin
+        run: ./gradlew build --no-daemon
 
       - name: Upload CyanoFactions JAR
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.get-version.outputs.artifact-name }}
-          path: build/libs/${{ steps.get-version.outputs.artifact-name }}.jar
+          name: CyanoFactions-${{ github.run_number }}
+          path: build/libs/*.jar
           retention-days: 30
           compression-level: 9
 
@@ -94,8 +56,6 @@ jobs:
         run: |
           echo "## 🏗️ CyanoFactions Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version:** ${{ needs.build.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Artifact:** ${{ needs.build.outputs.artifact-name }}.jar" >> $GITHUB_STEP_SUMMARY
           echo "- **Build Status:** ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
