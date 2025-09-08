@@ -1,13 +1,7 @@
 package io.github.toberocat.improvedfactions.modules.base
 
-import com.jeff_media.updatechecker.UpdateCheckSource
-import com.jeff_media.updatechecker.UpdateChecker
-import com.jeff_media.updatechecker.UserAgentBuilder
 import io.github.toberocat.improvedfactions.ImprovedFactionsPlugin
-import io.github.toberocat.improvedfactions.SPIGOT_RESOURCE_ID
 import io.github.toberocat.improvedfactions.annotations.papi.PapiPlaceholder
-import io.github.toberocat.improvedfactions.annotations.permission.Permission
-import io.github.toberocat.improvedfactions.annotations.permission.PermissionConfigurations
 import io.github.toberocat.improvedfactions.claims.clustering.detector.ClaimClusterDetector
 import io.github.toberocat.improvedfactions.claims.clustering.query.DatabaseClaimQueryProvider
 import io.github.toberocat.improvedfactions.commands.processor.baseCommandProcessors
@@ -22,10 +16,10 @@ import io.github.toberocat.improvedfactions.user.factionUser
 import io.github.toberocat.improvedfactions.utils.BStatsCollector
 import io.github.toberocat.improvedfactions.utils.FileUtils
 import io.github.toberocat.improvedfactions.utils.toOfflinePlayer
+import java.util.logging.Logger
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import org.bukkit.OfflinePlayer
 import org.jetbrains.exposed.sql.Database
-import java.util.logging.Logger
 
 object BaseModule : Module {
     const val MODULE_NAME = "base"
@@ -49,14 +43,10 @@ object BaseModule : Module {
         config = ImprovedFactionsConfig.createConfig(plugin)
 
         BStatsCollector(plugin)
-        checkForUpdate()
 
         copyFolders()
 
-        plugin.registerListeners(
-            MoveListener(),
-            PlayerJoinListener()
-        )
+        plugin.registerListeners(MoveListener(), PlayerJoinListener())
 
         integrations = Integrations(plugin)
         updateLanguages(plugin)
@@ -88,33 +78,6 @@ object BaseModule : Module {
         placeholders["join_mode"] = { it.factionUser().faction()?.factionJoinType?.toString() }
     }
 
-    @Permission("factions.updatechecker", config = PermissionConfigurations.OP_ONLY)
-    private fun checkForUpdate() {
-        if (!plugin.config.getBoolean("update-checker")) return
-
-        logger.info("Checking for updates...")
-        runCatching {
-            UpdateChecker(plugin, UpdateCheckSource.SPIGOT, SPIGOT_RESOURCE_ID.toString())
-                .setDownloadLink(SPIGOT_RESOURCE_ID)
-                .setDonationLink("https://www.paypal.com/donate/?hosted_button_id=BGB6QWR886Q6Y")
-                .setChangelogLink(SPIGOT_RESOURCE_ID)
-                .setNotifyOpsOnJoin(true)
-                .setColoredConsoleOutput(false)
-                .setSupportLink("https://discord.com/invite/yJYyNRfk39")
-                .setNotifyByPermissionOnJoin("factions.updatechecker")
-                .setUserAgent(
-                    UserAgentBuilder()
-                        .addServerVersion()
-                        .addBukkitVersion()
-                        .addPluginNameAndVersion()
-                )
-                .checkEveryXHours(24.0)
-                .checkNow()
-        }.onFailure { e -> 
-            logger.warning("Failed to check for updates... ${e.message}")
-        }
-    }
-
     private fun copyFolders() {
         FileUtils.copyAll(plugin, "languages")
     }
@@ -124,7 +87,7 @@ object BaseModule : Module {
     }
 
     override fun getCommandProcessors(plugin: ImprovedFactionsPlugin) =
-        baseCommandProcessors(plugin)
+            baseCommandProcessors(plugin)
 
     fun basePair() = MODULE_NAME to this
 }

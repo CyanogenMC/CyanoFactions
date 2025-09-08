@@ -13,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin
  * Created: 04.08.2023
  * @author Tobias Madlberger (Tobias)
  */
-const val SPIGOT_RESOURCE_ID = 95617
 
 open class ImprovedFactionsPlugin : JavaPlugin() {
 

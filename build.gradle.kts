@@ -40,7 +40,6 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://jitpack.io")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    maven("https://repo.jeff-media.com/public")
     maven("https://repo.mikeprimm.com/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.papermc.io/repository/maven-public/")
@@ -69,8 +68,9 @@ dependencies {
     implementation(libs.toberocore)
     implementation(libs.sqlite.jdbc)
     implementation(libs.h2)
-    implementation(libs.spigot.update.checker)
-    compileOnly(libs.guiengine)
+    compileOnly(libs.guiengine) {
+        exclude(group = "com.jeff_media", module = "SpigotUpdateChecker")
+    }
     implementation(libs.adventure.text.minimessage)
     implementation(libs.adventure.text.serializer.legacy)
     implementation(libs.kyori.adventure.platform.bukkit)
@@ -120,7 +120,6 @@ tasks.shadowJar {
     relocate("net.kyori", "io.github.toberocat.relocated.kyori")
     relocate("dev.s7a", "io.github.toberocat.relocated.base64itemstack")
     relocate("org.bstats", "io.github.toberocat.relocated.bstats")
-    relocate("com.jeff_media.updatechecker", "io.github.toberocat.relocated.updatechecker")
     
     exclude("META-INF/LICENSE*")
     exclude("META-INF/NOTICE*")
