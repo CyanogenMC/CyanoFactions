@@ -2,6 +2,9 @@ package io.github.toberocat.improvedfactions.factions
 
 import io.github.toberocat.improvedfactions.ImprovedFactionsPlugin
 import io.github.toberocat.improvedfactions.annotations.localization.Localization
+import io.github.toberocat.improvedfactions.api.events.FactionDeleteEvent
+import io.github.toberocat.improvedfactions.api.events.FactionJoinEvent
+import io.github.toberocat.improvedfactions.api.events.FactionLeaveEvent
 import io.github.toberocat.improvedfactions.claims.*
 import io.github.toberocat.improvedfactions.database.DatabaseManager.loggedTransaction
 import io.github.toberocat.improvedfactions.exceptions.*
@@ -17,9 +20,6 @@ import io.github.toberocat.improvedfactions.modules.power.PowerRaidsModule.power
 import io.github.toberocat.improvedfactions.modules.relations.RelationsModule
 import io.github.toberocat.improvedfactions.ranks.FactionRank
 import io.github.toberocat.improvedfactions.ranks.FactionRankHandler
-import io.github.toberocat.improvedfactions.api.events.FactionDeleteEvent
-import io.github.toberocat.improvedfactions.api.events.FactionJoinEvent
-import io.github.toberocat.improvedfactions.api.events.FactionLeaveEvent
 import io.github.toberocat.improvedfactions.ranks.listRanks
 import io.github.toberocat.improvedfactions.translation.LocalizationKey
 import io.github.toberocat.improvedfactions.translation.LocalizedException
@@ -30,9 +30,10 @@ import io.github.toberocat.improvedfactions.user.factionUser
 import io.github.toberocat.improvedfactions.user.noFactionId
 import io.github.toberocat.improvedfactions.utils.Base64Item
 import io.github.toberocat.improvedfactions.utils.toOfflinePlayer
-import io.github.toberocat.toberocore.command.exceptions.CommandException
 import io.github.toberocat.toberocore.util.ItemUtils
 import io.github.toberocat.toberocore.util.MathUtils
+import java.util.*
+import kotlin.math.max
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import org.bukkit.Bukkit
@@ -45,8 +46,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.SizedIterable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
-import java.util.*
-import kotlin.math.max
 
 /**
  * Created: 04.08.2023
@@ -73,22 +72,14 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
     var name
         get() = localName
         set(value) {
-            broadcast(
-                "base.faction.renamed", mapOf(
-                    "old" to localName, "new" to value
-                )
-            )
+            broadcast("base.faction.renamed", mapOf("old" to localName, "new" to value))
             localName = value
         }
 
     var factionJoinType
         get() = localFactionJoinType
         set(value) {
-            broadcast(
-                "base.faction.join-type-changed", mapOf(
-                    "mode" to value.name.lowercase()
-                )
-            )
+            broadcast("base.faction.join-type-changed", mapOf("mode" to value.name.lowercase()))
             localFactionJoinType = value
         }
 
@@ -100,9 +91,8 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
         }
         set(value) {
             val base64 = runCatching { Base64Item.encode(value) }.getOrNull() ?: return
-            if (base64.length > BaseModule.config.maxFactionIconLength) throw CommandException(
-                "base.exceptions.icon.invalid-icon", emptyMap()
-            )
+            if (base64.length > BaseModule.config.maxFactionIconLength)
+                    throw LocalizedException("base.exceptions.icon.invalid-icon")
             base64Icon = base64
         }
 
@@ -110,51 +100,47 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
         val event = FactionDeleteEvent(this)
         Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled()) return
-        
+
         BaseModule.claimChunkClusters.removeFactionClusters(this)
         DynmapModule.dynmapModule().dynmapModuleHandle.removeHome(this)
         listRanks().forEach { it.delete() }
-        claims().forEach {
-            it.factionId = noFactionId
-        }
+        claims().forEach { it.factionId = noFactionId }
         members().forEach { unsetUserData(it) }
         RelationsModule.deleteFactionRelations(id.value)
-        
+
         super.delete()
     }
 
     fun generateColor() = FactionHandler.generateColor(id.value)
 
-
     fun setMaxPower(newMaxPower: Int) {
         val actualNewMaxPower = max(newMaxPower, 0)
-        if (actualNewMaxPower == localMaxPower)
-            return
+        if (actualNewMaxPower == localMaxPower) return
 
         if (accumulatedPower > actualNewMaxPower)
-            setAccumulatedPower(actualNewMaxPower, PowerAccumulationChangeReason.MAX_CHANGED)
+                setAccumulatedPower(actualNewMaxPower, PowerAccumulationChangeReason.MAX_CHANGED)
         broadcast(
-            "power.faction.max-power-changed",
-            mapOf(
-                "old" to localAccumulatedPower.toString(),
-                "new" to actualNewMaxPower.toString()
-            )
+                "power.faction.max-power-changed",
+                mapOf(
+                        "old" to localAccumulatedPower.toString(),
+                        "new" to actualNewMaxPower.toString()
+                )
         )
         localMaxPower = actualNewMaxPower
     }
 
     fun setAccumulatedPower(newAccumulatedPower: Int, reason: PowerAccumulationChangeReason) {
-        val actualNewAccumulatedPower = MathUtils.clamp(newAccumulatedPower, -localMaxPower, localMaxPower)
-        if (actualNewAccumulatedPower == localAccumulatedPower)
-            return
+        val actualNewAccumulatedPower =
+                MathUtils.clamp(newAccumulatedPower, -localMaxPower, localMaxPower)
+        if (actualNewAccumulatedPower == localAccumulatedPower) return
 
         broadcast(
-            "power.faction.accumulated-power-changed.$reason",
-            mapOf(
-                "old" to localAccumulatedPower.toString(),
-                "new" to actualNewAccumulatedPower.toString(),
-                "max" to localMaxPower.toString()
-            )
+                "power.faction.accumulated-power-changed.$reason",
+                mapOf(
+                        "old" to localAccumulatedPower.toString(),
+                        "new" to actualNewAccumulatedPower.toString(),
+                        "max" to localMaxPower.toString()
+                )
         )
 
         BaseModule.claimChunkClusters.markFactionClusterForUpdate(this)
@@ -163,45 +149,48 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
 
     fun countActiveMembers(ticksIntoPast: Long): Int {
         val minStamp = System.currentTimeMillis() - ticksIntoPast / 20 * 1000
-        return FactionUser.find { FactionUsers.factionId eq id.value }
-            .count { user -> user.offlinePlayer().let { it.isOnline || it.lastPlayed > minStamp } }
+        return FactionUser.find { FactionUsers.factionId eq id.value }.count { user ->
+            user.offlinePlayer().let { it.isOnline || it.lastPlayed > minStamp }
+        }
     }
 
     fun countInactiveMembers(millisecondsIntoPast: Long): Int {
         val minStamp = System.currentTimeMillis() - millisecondsIntoPast
-        return FactionUser.find { FactionUsers.factionId eq id.value }
-            .count { user -> user.offlinePlayer().let { !it.isOnline && it.lastPlayed <= minStamp } }
+        return FactionUser.find { FactionUsers.factionId eq id.value }.count { user ->
+            user.offlinePlayer().let { !it.isOnline && it.lastPlayed <= minStamp }
+        }
     }
 
     fun isInactive(toMillis: Long): Boolean {
         val minStamp = System.currentTimeMillis() - toMillis
-        return FactionUser.find { FactionUsers.factionId eq id.value }
-            .none { user -> user.offlinePlayer().let { it.isOnline || it.lastPlayed > minStamp } }
+        return FactionUser.find { FactionUsers.factionId eq id.value }.none { user ->
+            user.offlinePlayer().let { it.isOnline || it.lastPlayed > minStamp }
+        }
     }
 
-    fun members(): SizedIterable<FactionUser> = FactionUser.find { FactionUsers.factionId eq id.value }
+    fun members(): SizedIterable<FactionUser> =
+            FactionUser.find { FactionUsers.factionId eq id.value }
 
-    fun claims(): SizedIterable<FactionClaim> = FactionClaim.find { FactionClaims.factionId eq id.value }
+    fun claims(): SizedIterable<FactionClaim> =
+            FactionClaim.find { FactionClaims.factionId eq id.value }
 
-    @Throws(CommandException::class)
+    @Throws(LocalizedException::class)
     fun join(uuid: UUID, rankId: Int) {
         val user = uuid.factionUser()
-        if (isBanned(user))
-            throw CommandException("base.exceptions.you-are-banned", emptyMap())
+        if (isBanned(user)) throw LocalizedException("base.exceptions.you-are-banned")
 
         val event = FactionJoinEvent(this, user)
         Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled()) return
-        
+
         user.factionId = id.value
         user.assignedRank = rankId
 
         val player = Bukkit.getPlayer(uuid) ?: return
         val rank = loggedTransaction { user.rank() }
         broadcast(
-            "base.faction.player-joined", mapOf(
-                "player" to player.displayName, "rank" to rank.name
-            )
+                "base.faction.player-joined",
+                mapOf("player" to player.displayName, "rank" to rank.name)
         )
 
         powerRaidModule().powerModuleHandle.memberJoin(this)
@@ -213,78 +202,89 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
         if (inviterUserId == invitedUserId) throw CantInviteYourselfException()
 
         val factId = id.value
-        val invite = FactionInvite.new {
-            inviterId = inviterUserId
-            invitedId = invitedUserId
-            factionId = factId
-            this.rankId = rankId
-            expirationDate = Clock.System.now()
-                .plus(5, DateTimeUnit.MINUTE)
-                .toLocalDateTime(TimeZone.UTC)
-        }
-        Bukkit.getScheduler().runTaskLater(
-            ImprovedFactionsPlugin.instance,
-            Runnable { loggedTransaction { invite.delete() } },
-            BaseModule.config.inviteExpiresInMinutes * 60 * 20L
-        )
+        val invite =
+                FactionInvite.new {
+                    inviterId = inviterUserId
+                    invitedId = invitedUserId
+                    factionId = factId
+                    this.rankId = rankId
+                    expirationDate =
+                            Clock.System.now()
+                                    .plus(5, DateTimeUnit.MINUTE)
+                                    .toLocalDateTime(TimeZone.UTC)
+                }
+        Bukkit.getScheduler()
+                .runTaskLater(
+                        ImprovedFactionsPlugin.instance,
+                        Runnable { loggedTransaction { invite.delete() } },
+                        BaseModule.config.inviteExpiresInMinutes * 60 * 20L
+                )
 
         broadcast(
-            "base.faction.player-invited", mapOf(
-                "inviter" to (Bukkit.getPlayer(inviter)?.displayName ?: "§cNot found"),
-                "invited" to (Bukkit.getPlayer(invited)?.displayName ?: "§cNot found")
-            )
+                "base.faction.player-invited",
+                mapOf(
+                        "inviter" to (Bukkit.getPlayer(inviter)?.displayName ?: "§cNot found"),
+                        "invited" to (Bukkit.getPlayer(invited)?.displayName ?: "§cNot found")
+                )
         )
 
         return invite
     }
 
     fun claimSquare(
-        centerChunk: Chunk,
-        squareRadius: Int,
-        handleError: (e: LocalizedException) -> Unit,
+            centerChunk: Chunk,
+            squareRadius: Int,
+            handleError: (e: LocalizedException) -> Unit,
     ): ClaimStatistics =
-        squareClaimAction(centerChunk, squareRadius, { claim(it, announce = false) }, handleError)
+            squareClaimAction(
+                    centerChunk,
+                    squareRadius,
+                    { claim(it, announce = false) },
+                    handleError
+            )
 
     fun claim(chunk: Chunk, announce: Boolean = true): FactionClaim {
         val claim = chunk.getFactionClaim()
-        
+
         // Check if world allows claiming
         if (!canClaimInWorld(chunk.world.name)) throw CantClaimThisChunkException(chunk)
-        
+
         // Check if chunk is already claimed by this faction
         if (claim != null && claim.factionId == id.value) {
             throw ChunkAlreadyOwnedException(chunk)
         }
-        
+
         // Check if chunk is already claimed by another faction
         if (claim != null && claim.factionId != noFactionId) {
             throw ChunkAlreadyClaimedException(chunk)
         }
-        
+
         // Check if claim zone allows claiming
         if (claim?.canClaim() == false) throw CantClaimThisChunkException(chunk)
-        
+
         powerRaidModule().powerModuleHandle.claimChunk(chunk, this)
 
         val factionId = id.value
-        val factionClaim = claim ?: FactionClaim.new {
-            chunkX = chunk.x
-            chunkZ = chunk.z
-            this.world = chunk.world.name
-            this.factionId = factionId
-        }
+        val factionClaim =
+                claim
+                        ?: FactionClaim.new {
+                            chunkX = chunk.x
+                            chunkZ = chunk.z
+                            this.world = chunk.world.name
+                            this.factionId = factionId
+                        }
 
         factionClaim.factionId = factionId
-        BaseModule.claimChunkClusters.insertFactionPosition(
-            factionClaim,
-            id.value
-        )
+        BaseModule.claimChunkClusters.insertFactionPosition(factionClaim, id.value)
 
         if (announce) {
             broadcast(
-                "base.faction.chunk-claimed", mapOf(
-                    "x" to chunk.x.toString(), "z" to chunk.z.toString(), "world" to chunk.world.name
-                )
+                    "base.faction.chunk-claimed",
+                    mapOf(
+                            "x" to chunk.x.toString(),
+                            "z" to chunk.z.toString(),
+                            "world" to chunk.world.name
+                    )
             )
         }
         return factionClaim
@@ -293,15 +293,19 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
     fun bans(): SizedIterable<FactionBan> = FactionBan.find { FactionBans.faction eq id }
 
     fun isBanned(user: FactionUser): Boolean =
-        FactionBan.count(FactionBans.user eq user.id and (FactionBans.faction eq id)) != 0L
+            FactionBan.count(FactionBans.user eq user.id and (FactionBans.faction eq id)) != 0L
 
-    fun unclaimSquare(chunk: Chunk, squareRadius: Int, handleError: (e: LocalizedException) -> Unit) =
-        squareClaimAction(chunk, squareRadius, { unclaim(it, announce = false) }, handleError)
+    fun unclaimSquare(
+            chunk: Chunk,
+            squareRadius: Int,
+            handleError: (e: LocalizedException) -> Unit
+    ) = squareClaimAction(chunk, squareRadius, { unclaim(it, announce = false) }, handleError)
 
     @Throws(FactionDoesntHaveThisClaimException::class)
     fun unclaim(chunk: Chunk, announce: Boolean = true) {
         val claim = chunk.getFactionClaim()
-        if (claim == null || claim.factionId != id.value) throw FactionDoesntHaveThisClaimException()
+        if (claim == null || claim.factionId != id.value)
+                throw FactionDoesntHaveThisClaimException()
         val homeLocation = claim.faction()?.getHome()
         if (homeLocation != null && homeLocation.chunk == chunk) throw ClaimHasHomeException()
 
@@ -309,9 +313,12 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
         BaseModule.claimChunkClusters.removePosition(claim)
         if (announce) {
             broadcast(
-                "base.faction.chunk-unclaimed", mapOf(
-                    "x" to chunk.x.toString(), "z" to chunk.z.toString(), "world" to chunk.world.name
-                )
+                    "base.faction.chunk-unclaimed",
+                    mapOf(
+                            "x" to chunk.x.toString(),
+                            "z" to chunk.z.toString(),
+                            "world" to chunk.world.name
+                    )
             )
         }
     }
@@ -324,11 +331,10 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
         broadcast("base.faction.player-kicked", emptyMap())
     }
 
-    @Throws(CommandException::class)
+    @Throws(LocalizedException::class)
     fun ban(user: FactionUser) {
         if (owner == user.uniqueId) throw PlayerIsOwnerLeaveException()
-        if (isBanned(user))
-            throw CommandException("base.exceptions.already-banned", emptyMap())
+        if (isBanned(user)) throw LocalizedException("base.exceptions.already-banned")
 
         if (user.factionId == id.value) {
             unsetUserData(user)
@@ -346,26 +352,24 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
     @Throws(PlayerIsOwnerLeaveException::class)
     fun leave(player: UUID) {
         if (owner == player) throw PlayerIsOwnerLeaveException()
-        
+
         val user = player.factionUser()
         val event = FactionLeaveEvent(this, user)
         Bukkit.getPluginManager().callEvent(event)
         if (event.isCancelled()) return
-        
+
         unsetUserData(user)
         broadcast(
-            "base.faction.player-left", mapOf(
-                "player" to (Bukkit.getOfflinePlayer(player).name ?: "unknown")
-            )
+                "base.faction.player-left",
+                mapOf("player" to (Bukkit.getOfflinePlayer(player).name ?: "unknown"))
         )
     }
 
     fun transferOwnership(newOwner: UUID) {
         val user = newOwner.factionUser()
         if (user.factionId != id.value)
-            throw CommandException("base.exceptions.player-not-in-faction", emptyMap())
-        if (owner == newOwner)
-            throw CommandException("base.exceptions.player-already-owner", emptyMap())
+                throw LocalizedException("base.exceptions.player-not-in-faction")
+        if (owner == newOwner) throw LocalizedException("base.exceptions.player-already-owner")
         owner = user.uniqueId
 
         val previousOwner = owner.factionUser()
@@ -377,7 +381,7 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
     }
 
     fun broadcast(key: LocalizationKey, placeholders: Map<String, String>) =
-        MessageBroker.send(id.value, LocalizedMessage(key, placeholders))
+            MessageBroker.send(id.value, LocalizedMessage(key, placeholders))
 
     private fun unsetUserData(user: FactionUser) {
         user.factionId = noFactionId
@@ -387,7 +391,7 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
     }
 
     @Localization("base.exceptions.rank-not-found")
-    fun getDefaultRank() = FactionRank.findById(defaultRank) ?: throw LocalizedException(
-        "base.exceptions.rank-not-found", emptyMap()
-    )
+    fun getDefaultRank() =
+            FactionRank.findById(defaultRank)
+                    ?: throw LocalizedException("base.exceptions.rank-not-found", emptyMap())
 }

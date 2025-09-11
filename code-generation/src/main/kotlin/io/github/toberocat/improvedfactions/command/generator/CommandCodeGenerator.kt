@@ -43,6 +43,7 @@ class CommandCodeGenerator(private val commandData: CommandData) {
         import io.github.toberocat.improvedfactions.annotations.command.CommandResponse
         import io.github.toberocat.improvedfactions.commands.data.CommandProcessFunction
         import io.github.toberocat.improvedfactions.commands.data.CommandProcessFunctionParameter
+        import io.github.toberocat.improvedfactions.translation.getUnformattedLocalized
         import org.bukkit.command.CommandSender
 
         @Localization("${commandData.descriptionKey}")
@@ -117,11 +118,16 @@ class CommandCodeGenerator(private val commandData: CommandData) {
             "val ${parameter.uniqueName} = ${getArgumentParserCode(parameter)}!!.parse(sender, ${parameter.index}, args) $typeCast"
         }
 
+        val minCount = function.getMinParametersCount(commandData.needsConfirmation)
+        val maxCount = function.getMaxParametersCount(commandData.needsConfirmation)
         val argumentSizeCheck = """
-            if (args.size < ${function.getMinParametersCount(commandData.needsConfirmation)} || args.size > ${
-            function.getMaxParametersCount(commandData.needsConfirmation)
-        }) {
-                return missingRequiredArgument()
+            val usage = buildString {
+                append("/${commandData.label}")
+                ${if (function.parameters.isNotEmpty()) "append(\" \")" else ""}
+                ${if (function.parameters.isNotEmpty()) "append(listOf(${function.parameters.joinToString(", ") { "sender.getUnformattedLocalized(\"${it.getUsage(commandData)}\")" }}).joinToString(\" \"))" else ""}
+            }.trim()
+            if (args.size < $minCount || args.size > $maxCount) {
+                return missingRequiredArgument("usage" to usage)
             }
             """.trimIndent()
 
