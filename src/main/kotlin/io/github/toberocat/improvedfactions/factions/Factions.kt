@@ -17,6 +17,7 @@ object Factions : IntIdTable("factions") {
     val base64Icon = varchar("icon_base64", BaseModule.config.maxFactionIconLength).nullable()
     val factionJoinType = enumeration("join_type", FactionJoinType::class)
         .default(FactionJoinType.INVITE_ONLY)
+    val description = varchar("description", 255).default("")
 
     fun handleQueues() {
         Faction.all().forEach { FactionHandler.createListenersFor(it) }

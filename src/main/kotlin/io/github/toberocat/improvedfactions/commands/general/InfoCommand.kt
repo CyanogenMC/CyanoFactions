@@ -51,6 +51,8 @@ abstract class InfoCommand : InfoCommandContext() {
             sender.sendCommandResult("Enemies", faction.enemies().count().toString(), "/f enemies")
         }
 
+        sender.sendCommandResult("Description", if (faction.description.isNotEmpty()) faction.description else "No description set", "/f description")
+
         return showDetails("Join Type", faction.factionJoinType.name.lowercase())
     }
 

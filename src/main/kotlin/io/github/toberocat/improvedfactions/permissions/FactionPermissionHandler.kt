@@ -10,6 +10,7 @@ object Permissions {
     val SEND_INVITES = "send-invites".registerAsPermission(Material.BIRCH_SIGN)
     val SET_ICON = "set-icon".registerAsPermission(Material.WHITE_BANNER)
     val RENAME_FACTION = "rename-faction".registerAsPermission(Material.NAME_TAG)
+    val EDIT_FACTION_INFO = "edit-faction-info".registerAsPermission(Material.WRITABLE_BOOK)
     val MANAGE_PERMISSIONS = "manage-permissions".registerAsPermission(Material.REDSTONE)
     val KICK_PLAYER = "kick-player".registerAsPermission(Material.WOODEN_SWORD)
     val MANAGE_BANS = "manage-bans".registerAsPermission(Material.NETHERITE_AXE)
