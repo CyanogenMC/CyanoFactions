@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @GeneratedCommandMeta(
-    label = "description",
+    label = "setdesc",
     category = CommandCategory.MANAGE_CATEGORY,
     module = BaseModule.MODULE_NAME,
     responses = [
