@@ -18,7 +18,6 @@ import org.bukkit.entity.Player
     category = CommandCategory.INVITE_CATEGORY,
     module = BaseModule.MODULE_NAME,
     responses = [
-        CommandResponse("success"),
         CommandResponse("invitesHeader"),
         CommandResponse("inviteDetail"),
         CommandResponse("noInvites")
@@ -48,6 +47,6 @@ abstract class ListInvitesCommand : ListInvitesCommandContext() {
                 )
             )
         }
-        return success()
+        return CommandProcessResult.SUCCESS
     }
 }

@@ -20,8 +20,7 @@ import org.bukkit.entity.Player
         CommandResponse("rankHeader"),
         CommandResponse("rankOverview"),
         CommandResponse("notInFaction"),
-        CommandResponse("noPermission"),
-        CommandResponse("ranksListed")
+        CommandResponse("noPermission")
     ]
 )
 abstract class RankCommandRoute : RankCommandRouteContext() {
@@ -49,6 +48,6 @@ abstract class RankCommandRoute : RankCommandRouteContext() {
         }
 
         ranks.forEach { player.sendCommandResult(it) }
-        return ranksListed()
+        return CommandProcessResult.SUCCESS
     }
 }

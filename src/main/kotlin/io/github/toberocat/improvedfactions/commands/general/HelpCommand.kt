@@ -20,8 +20,7 @@ import org.bukkit.command.CommandSender
         CommandResponse("helpHeader"),
         CommandResponse("helpCategoryOverview"),
         CommandResponse("helpCommandDetails"),
-        CommandResponse("helpCommandNotFound"),
-        CommandResponse("helpSuccess")
+        CommandResponse("helpCommandNotFound")
     ]
 )
 abstract class HelpCommand : HelpCommandContext() {
@@ -44,7 +43,7 @@ abstract class HelpCommand : HelpCommandContext() {
     fun process(sender: CommandSender, command: String?): CommandProcessResult {
         if (command == null) {
             printCategoryOverview(sender)
-            return helpSuccess()
+            return CommandProcessResult.SUCCESS
         }
 
         val processor = commands[command]
@@ -57,12 +56,12 @@ abstract class HelpCommand : HelpCommandContext() {
                 }
 
                 printCategoryDetails(sender, category)
-                helpSuccess()
+                CommandProcessResult.SUCCESS
             }
 
             else -> {
                 printCommandDetails(sender, processor)
-                helpSuccess()
+                CommandProcessResult.SUCCESS
             }
         }
     }
