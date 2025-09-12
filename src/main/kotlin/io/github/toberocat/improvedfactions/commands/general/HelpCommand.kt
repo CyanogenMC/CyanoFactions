@@ -13,15 +13,15 @@ import io.github.toberocat.improvedfactions.utils.isSubtype
 import org.bukkit.command.CommandSender
 
 @GeneratedCommandMeta(
-    label = "help",
-    category = CommandCategory.GENERAL_CATEGORY,
-    module = BaseModule.MODULE_NAME,
-    responses = [
-        CommandResponse("helpHeader"),
-        CommandResponse("helpCategoryOverview"),
-        CommandResponse("helpCommandDetails"),
-        CommandResponse("helpCommandNotFound")
-    ]
+        label = "help",
+        category = CommandCategory.GENERAL_CATEGORY,
+        module = BaseModule.MODULE_NAME,
+        responses =
+                [
+                        CommandResponse("helpHeader"),
+                        CommandResponse("helpCategoryOverview"),
+                        CommandResponse("helpCommandDetails"),
+                        CommandResponse("helpCommandNotFound")]
 )
 abstract class HelpCommand : HelpCommandContext() {
 
@@ -34,16 +34,15 @@ abstract class HelpCommand : HelpCommandContext() {
         commands.forEach { (commandLabel, processor) ->
             val categoryLocale = processor.commandData.category
             val category = categoryLocale.substringAfterLast(".")
-            categoryIndex.computeIfAbsent(category) { ArrayList() }.add(commandLabel)
+            categoryIndex.computeIfAbsent(category) { mutableListOf() }.add(commandLabel)
             categoryLocaleIndex[category] = categoryLocale
         }
     }
 
-
-    fun process(sender: CommandSender, command: String?): CommandProcessResult {
+    fun process(sender: CommandSender, command: String?): CommandProcessResult? {
         if (command == null) {
             printCategoryOverview(sender)
-            return CommandProcessResult.SUCCESS
+            return null
         }
 
         val processor = commands[command]
@@ -56,12 +55,11 @@ abstract class HelpCommand : HelpCommandContext() {
                 }
 
                 printCategoryDetails(sender, category)
-                CommandProcessResult.SUCCESS
+                null
             }
-
             else -> {
                 printCommandDetails(sender, processor)
-                CommandProcessResult.SUCCESS
+                null
             }
         }
     }
@@ -71,10 +69,10 @@ abstract class HelpCommand : HelpCommandContext() {
         categoryIndex.keys.forEach { category ->
             val categoryLocale = categoryLocaleIndex[category] ?: category
             sender.sendCommandResult(
-                helpCategoryOverview(
-                    "category-name" to sender.getUnformattedLocalized(categoryLocale),
-                    "category-id" to "c:$category"
-                )
+                    helpCategoryOverview(
+                            "category-name" to sender.getUnformattedLocalized(categoryLocale),
+                            "category-id" to "c:$category"
+                    )
             )
         }
     }
@@ -83,23 +81,28 @@ abstract class HelpCommand : HelpCommandContext() {
         val commandData = processor.commandData
         val baseCommand = commandData.label
         val function =
-            commandData.processFunctions.firstOrNull { sender::class.isSubtype(it.senderClass) } ?: return
-        val args = function.parameters.joinToString(" ") {
-            val usage = sender.getUnformattedLocalized(it.getUsage(commandData))
-            val description = sender.getUnformattedLocalized(it.getDescription(commandData))
-            "<hover:show_text:'${description}'>" +
-                    "<${if (usage.startsWith("<")) "aqua" else "gold"}>${usage}</hover>"
-        }
-        val rawArgs = function.parameters.joinToString(" ") { sender.getUnformattedLocalized(it.getUsage(commandData)) }
+                commandData.processFunctions.firstOrNull { sender::class.isSubtype(it.senderClass) }
+                        ?: return
+        val args =
+                function.parameters.joinToString(" ") {
+                    val usage = sender.getUnformattedLocalized(it.getUsage(commandData))
+                    val description = sender.getUnformattedLocalized(it.getDescription(commandData))
+                    "<hover:show_text:'${description}'>" +
+                            "<${if (usage.startsWith("<")) "aqua" else "gold"}>${usage}</hover>"
+                }
+        val rawArgs =
+                function.parameters.joinToString(" ") {
+                    sender.getUnformattedLocalized(it.getUsage(commandData))
+                }
         val usage = "/$baseCommand $args".trim()
         val cmd = "/$baseCommand $rawArgs".trim()
 
         sender.sendCommandResult(
-            helpCommandDetails(
-                "usage" to usage,
-                "description" to sender.getUnformattedLocalized(commandData.descriptionKey),
-                "cmd" to cmd
-            )
+                helpCommandDetails(
+                        "usage" to usage,
+                        "description" to sender.getUnformattedLocalized(commandData.descriptionKey),
+                        "cmd" to cmd
+                )
         )
     }
 

@@ -13,19 +13,19 @@ import io.github.toberocat.improvedfactions.user.factionUser
 import org.bukkit.entity.Player
 
 @GeneratedCommandMeta(
-    label = "rank",
-    category = CommandCategory.PERMISSION_CATEGORY,
-    module = BaseModule.MODULE_NAME,
-    responses = [
-        CommandResponse("rankHeader"),
-        CommandResponse("rankOverview"),
-        CommandResponse("notInFaction"),
-        CommandResponse("noPermission")
-    ]
+        label = "rank",
+        category = CommandCategory.PERMISSION_CATEGORY,
+        module = BaseModule.MODULE_NAME,
+        responses =
+                [
+                        CommandResponse("rankHeader"),
+                        CommandResponse("rankOverview"),
+                        CommandResponse("notInFaction"),
+                        CommandResponse("noPermission")]
 )
 abstract class RankCommandRoute : RankCommandRouteContext() {
 
-    fun process(player: Player): CommandProcessResult {
+    fun process(player: Player): CommandProcessResult? {
         val user = player.factionUser()
         val faction = user.faction() ?: return notInFaction()
 
@@ -36,18 +36,17 @@ abstract class RankCommandRoute : RankCommandRouteContext() {
         player.sendCommandResult(rankHeader())
 
         val ranks = loggedTransaction {
-            faction.listRanks()
-                .filter { user.canManage(it) }
-                .map {
-                    rankOverview(
+            faction.listRanks().filter { user.canManage(it) }.map {
+                rankOverview(
                         "name" to it.name,
                         "priority" to it.priority.toString(),
                         "countAssignedUsers" to it.countAssignedUsers().toString()
-                    )
-                }
+                )
+            }
         }
 
-        ranks.forEach { player.sendCommandResult(it) }
-        return CommandProcessResult.SUCCESS
+        ranks.forEach { rank -> player.sendCommandResult(rank) }
+
+        return null
     }
 }
