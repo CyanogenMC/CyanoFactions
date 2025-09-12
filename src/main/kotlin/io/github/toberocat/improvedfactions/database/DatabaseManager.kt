@@ -52,5 +52,5 @@ object DatabaseManager {
     }
 
     fun createTables(vararg tables: Table) =
-        SchemaUtils.createMissingTablesAndColumns(*tables, withLogs = verboseLogging)
+        SchemaUtils.create(*tables)
 }

@@ -51,9 +51,9 @@ fun Player.getLocaleEnum(): Locale {
     val localeParts = locale.split("_")
     val locale =
             when (localeParts.size) {
-                1 -> Locale(localeParts[0])
-                2 -> Locale(localeParts[0], localeParts[1])
-                3 -> Locale(localeParts[0], localeParts[1], localeParts[2])
+                1 -> Locale.Builder().setLanguage(localeParts[0]).build()
+                2 -> Locale.Builder().setLanguage(localeParts[0]).setRegion(localeParts[1]).build()
+                3 -> Locale.Builder().setLanguage(localeParts[0]).setRegion(localeParts[1]).setVariant(localeParts[2]).build()
                 else -> Locale.ENGLISH
             }
     return locale
