@@ -56,10 +56,10 @@ abstract class PowerCommand : PowerCommandContext() {
 
         sender.sendCommandResult(details("Power", stringify(faction.accumulatedPower.toDouble())))
         sender.sendCommandResult(details("Max Power", stringify(faction.maxPower.toDouble())))
-        sender.sendCommandResult(details("Active Accumulation", "${stringify(activeAccumulation)} $timeUnitString"))
-        sender.sendCommandResult(details("Inactive Accumulation", "${stringify(inactiveAccumulation)} $timeUnitString"))
-        sender.sendCommandResult(details("Claim Keep", "${stringify(claimKeep)} $timeUnitString"))
-        sender.sendCommandResult(details("Current Accumulation", "${stringify(currentlyAccumulated)} $timeUnitString"))
+        sender.sendCommandResult(details("Active Accumulation", "${stringify(activeAccumulation)}$timeUnitString"))
+        sender.sendCommandResult(details("Inactive Accumulation", "${stringify(inactiveAccumulation)}$timeUnitString"))
+        sender.sendCommandResult(details("Claim Keep", "${stringify(claimKeep)}$timeUnitString"))
+        sender.sendCommandResult(details("Current Accumulation", "${stringify(currentlyAccumulated)}$timeUnitString"))
 
         return details("Next Claim Cost", stringify(nextClaimCost.toDouble()))
     }
