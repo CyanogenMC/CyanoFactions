@@ -16,22 +16,21 @@ import org.bukkit.entity.Player
     category = CommandCategory.MANAGE_CATEGORY,
     module = "base",
     responses = [
-        CommandResponse("joinModeChanged"),
         CommandResponse("invalidJoinType"),
         CommandResponse("notInFaction"),
         CommandResponse("noPermission"),
     ]
 )
 abstract class JoinTypeCommand : JoinTypeCommandContext() {
-    fun process(player: Player, joinType: FactionJoinType): CommandProcessResult {
+    fun process(player: Player, joinType: FactionJoinType): CommandProcessResult? {
         return setJoinType(player, joinType)
     }
 
-    fun process(sender: CommandSender, target: OfflinePlayer, joinType: FactionJoinType): CommandProcessResult {
+    fun process(sender: CommandSender, target: OfflinePlayer, joinType: FactionJoinType): CommandProcessResult? {
         return setJoinType(target, joinType)
     }
 
-    private fun setJoinType(player: OfflinePlayer, joinType: FactionJoinType): CommandProcessResult {
+    private fun setJoinType(player: OfflinePlayer, joinType: FactionJoinType): CommandProcessResult? {
         val factionUser = player.factionUser()
         val faction = factionUser.faction()
             ?: return notInFaction()
@@ -41,6 +40,6 @@ abstract class JoinTypeCommand : JoinTypeCommandContext() {
         }
 
         faction.factionJoinType = joinType
-        return joinModeChanged("mode" to joinType.name.lowercase())
+        return null
     }
 }
