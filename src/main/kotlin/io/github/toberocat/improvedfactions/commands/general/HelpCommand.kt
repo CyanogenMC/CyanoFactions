@@ -94,8 +94,8 @@ abstract class HelpCommand : HelpCommandContext() {
                 function.parameters.joinToString(" ") {
                     sender.getUnformattedLocalized(it.getUsage(commandData))
                 }
-        val usage = "/$baseCommand $args".trim()
-        val cmd = "/$baseCommand $rawArgs".trim()
+        val usage = "/f $baseCommand $args".trim()
+        val cmd = "/f $baseCommand $rawArgs".trim()
 
         sender.sendCommandResult(
                 helpCommandDetails(
