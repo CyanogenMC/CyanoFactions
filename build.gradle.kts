@@ -10,8 +10,8 @@ plugins {
     id("com.github.ben-manes.versions") version "0.52.0"
 }
 
-group = "io.github.toberocat.improved-factions"
-version = "2.3.0"
+group = "io.github.cyanogenmc.etcherfx.cyanofactions"
+version = "1.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
