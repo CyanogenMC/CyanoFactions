@@ -5,9 +5,9 @@
 <div align="center">
 
 [![CodeFactor](https://www.codefactor.io/repository/github/CyanogenMC/cyanofactions/badge/main?style=for-the-badge)](https://www.codefactor.io/repository/github/CyanogenMC/cyanofactions/overview/main)
-[![License](https://img.shields.io/github/license/CyanogenMC/CyanoFactions?style=for-the-badge)](https://github.com/CyanogenMC/CyanoFactions/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/CyanogenMC/CyanoFactions?style=for-the-badge)](https://github.com/CyanogenMC/CyanoFactions/issues)
-[![GitHub Release](https://img.shields.io/github/release/CyanogenMC/CyanoFactions?include_prereleases&style=for-the-badge)](https://github.com/CyanogenMC/CyanoFactions/releases/latest)
+[![License](https://img.shields.io/github/license/CyanogenMC/cyanofactions?style=for-the-badge)](https://github.com/CyanogenMC/cyanofactions/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/CyanogenMC/cyanofactions?style=for-the-badge)](https://github.com/CyanogenMC/cyanofactions/issues)
+[![GitHub Release](https://img.shields.io/github/release/CyanogenMC/cyanofactions?include_prereleases&style=for-the-badge)](https://github.com/CyanogenMC/cyanofactions/releases/latest)
 
 **A lightweight factions plugin with a highly vanilla experience.**
 
