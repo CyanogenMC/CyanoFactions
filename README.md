@@ -1,72 +1,68 @@
-# ImprovedFactions
-
-![ImprovedFactions Banner](https://github.com/ToberoCat/ImprovedFactions_new/blob/main/branding/banners/spigot-banner.png?raw=true)
-
+<h1 align="center">
+  <img src="projectInfo/banner.png" alt="CyanoFactions Banner" width="850">
+</h1>
+  
 <div align="center">
 
-[![stars - ImprovedFactions](https://img.shields.io/github/stars/ToberoCat/ImprovedFactions_new?style=social)](https://github.com/ToberoCat/ImprovedFactions_new)
-[![forks - ImprovedFactions](https://img.shields.io/github/forks/ToberoCat/ImprovedFactions_new?style=social)](https://github.com/ToberoCat/ImprovedFactions_new)
-[![GitHub release](https://img.shields.io/github/release/ToberoCat/ImprovedFactions_new?include_prereleases=&sort=semver&color=%23FEDD58)](https://github.com/ToberoCat/ImprovedFactions_new/releases/)
-[![issues - ImprovedFactions](https://img.shields.io/github/issues/ToberoCat/ImprovedFactions_new)](https://github.com/ToberoCat/ImprovedFactions_new/issues)
-[![SpigotMain - ImprovedFactions](https://img.shields.io/badge/Spigot-ImprovedFactions-orange)](https://www.spigotmc.org/resources/improved-factions.95617 "Spigot ImprovedFactions page")
-[![CodeFactor](https://www.codefactor.io/repository/github/toberocat/improvedfactions/badge)](https://www.codefactor.io/repository/github/toberocat/improvedfactions)
-[![Donate - PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?logo=paypal&style=flat-square)](https://www.paypal.com/donate/?hosted_button_id=BGB6QWR886Q6Y)
-[![Discord](https://img.shields.io/discord/819932760550014986.svg?logo=discord&colorB=7289DA&style=flat-square)](https://discord.gg/VmSbFNZejz)
+[![CodeFactor](https://www.codefactor.io/repository/github/CyanogenMC/cyanofactions/badge/main?style=for-the-badge)](https://www.codefactor.io/repository/github/CyanogenMC/cyanofactions/overview/main)
+[![License](https://img.shields.io/github/license/CyanogenMC/CyanoFactions?style=for-the-badge)](https://github.com/CyanogenMC/CyanoFactions/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/CyanogenMC/CyanoFactions?style=for-the-badge)](https://github.com/CyanogenMC/CyanoFactions/issues)
+[![GitHub Release](https://img.shields.io/github/release/CyanogenMC/CyanoFactions?include_prereleases&style=for-the-badge)](https://github.com/CyanogenMC/CyanoFactions/releases/latest)
+
+**A lightweight factions plugin with a highly vanilla experience.**
+
+A fork of ToberoCat's [ImprovedFactions](https://github.com/ToberoCat/ImprovedFactions) with extra features and fixes.
 
 </div>
 
-## Table of Contents
-- [About](#about)
-- [Features](#features)
-- [Getting started](#getting-started)
-- [Contributing](#contributing)
-- [Support](#support)
-- [License](#license)
+## 📖 Table of Contents
 
-## About
+- [📖 Table of Contents](#-table-of-contents)
+- [🔗 Links](#-links)
+- [🔧 Prerequisites](#-prerequisites)
+- [🛠️ Installation](#️-installation)
+- [📌 Placeholders](#-placeholders)
 
-ImprovedFactions is a lightweight and high-performance Minecraft faction plugin. It offers a user-friendly experience with features that can be downloaded directly from Minecraft, enhancing server gameplay and community interaction.
+## 🔗 Links
 
-## Features
+- [Releases](https://github.com/CyanogenMC/CyanoFactions/releases)
+- [Modrinth](https://modrinth.com/plugin/cyanofactions)
+- [Dev Builds](https://github.com/CyanogenMC/CyanoFactions/actions/workflows/build.yml)
 
-- **Performance Optimized**: Designed for efficiency, ensuring smooth gameplay even on busy servers.
-- **User-Friendly**: Intuitive commands and interfaces for players of all experience levels.
-- **Customizable**: Extensive configuration options to tailor the faction experience to your server's needs.
-- **Minecraft Integration**: Unique features downloadable directly through Minecraft for seamless user experience.
-- **Regular Updates**: Continual improvements and new features to keep your faction gameplay fresh and exciting.
+## 🔧 Prerequisites
 
-## Getting started
-Install instructions can be found [here](https://toberocat.github.io/ImprovedFactions/docs/getting-started)
+- A Minecraft server running Bukkit, Spigot, PaperMC (recommended) or any other fork of Paper/Spigot (untested)
+- Java 17 or higher
 
-## Contributing
+## 🛠️ Installation
+1. Download the latest release from either the GitHub releases page or Modrinth
+2. Place the downloaded `CyanoFactions-[version].jar` file into your server's `plugins` folder
+3. Start/restart the server to generate the configuration files
 
-We welcome contributions from the community! If you'd like to contribute, please:
+## 📌 Placeholders
 
-1. Fork the repository
-2. Create a new branch for your feature
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+This plugin has [PlaceholderAPI](https://ci.extendedclip.com/job/PlaceholderAPI/) support. Below is a list of all available placeholders:
 
-For more information, see our [CONTRIBUTING.md](CONTRIBUTING.md) file.
+**Base Placeholders**:
 
-## Support
+| Placeholder            | Description                                                     |
+| ---------------------- | --------------------------------------------------------------- |
+| `%faction_owner%`      | The owner of the player's faction                               |
+| `%faction_name%`       | The name of the player's faction                                |
+| `%faction_rank%`       | The rank of the player in the faction                           |
+| `%faction_join_mode%`  | The join mode of the player's faction                           |
+| `%faction_in_faction%` | Returns `true` if the player is in a faction, `false` otherwise |
 
-- For bug reports and feature requests, please use our [GitHub Issues](https://github.com/ToberoCat/ImprovedFactions_new/issues).
-- Join our [Discord server](https://discord.gg/VmSbFNZejz) for community support and discussions.
+**When `power-raids` module is enabled (default)**:
 
-## License
-
-ImprovedFactions is released under the [GNU License](LICENSE).
-
----
-
-<div align="center">
-
-Made with ❤️ by [ToberoCat](https://github.com/ToberoCat)
-
-Check [CONTRIBUTORS.md](CONTRIBUTORS.md) to see a list of all people who contributed to this project.
-
-[![Bstats](https://img.shields.io/badge/View-Bstats-blue?style=for-the-badge)](https://bstats.org/plugin/bukkit/ImprovedFactions/14810)
-
-</div>
+| Placeholder                            | Description                                                  |
+| -------------------------------------- | ------------------------------------------------------------ |
+| `%faction_power%`                      | The power of your faction                                    |
+| `%faction_max_power%`                  | The maximum power of your faction                            |
+| `%faction_next_power_gain%`            | The power that will be gained on the next power gain         |
+| `%faction_claim_upkeep_cost%`          | The cost of maintaining your claims                          |
+| `%faction_next_claim_cost%`            | The cost of claiming the next chunk                          |
+| `%faction_active_accumulation%`        | The power currently being accumulated by your active members |
+| `%faction_inactive_accumulation%`      | The power you currently lose due to inactive members         |
+| `%faction_next_accumulation_cycle%`    | The time left until the next power accumulation cycle        |
+| `%faction_next_claim_keep_cost_cycle%` | The time left until the next claim keep cost cycle           |
