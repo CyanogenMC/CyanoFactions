@@ -31,6 +31,7 @@ class ImprovedFactionsConfig(
         var particleTickSpeed: Long = 1,
         var maxClaimRadius: Int = 5,
         var pluginPrefix: String = "<dark_gray>[<yellow>CF</yellow><dark_gray>]",
+        var disablePrefix: Boolean = false,
         var titleFadeInTicks: Int = 10,
         var titleStayTicks: Int = 20,
         var titleFadeOutTicks: Int = 10,
@@ -64,6 +65,7 @@ class ImprovedFactionsConfig(
                 config.getLong("performance.decorative-particles.tick-speed", particleTickSpeed)
         maxClaimRadius = config.getInt("factions.max-claim-radius", maxClaimRadius)
         pluginPrefix = config.getString("plugin-prefix") ?: pluginPrefix
+        disablePrefix = config.getBoolean("disable-prefix", disablePrefix)
         titleFadeInTicks = config.getInt("title-timing.fade-in-ticks", titleFadeInTicks)
         titleStayTicks = config.getInt("title-timing.stay-ticks", titleStayTicks)
         titleFadeOutTicks = config.getInt("title-timing.fade-out-ticks", titleFadeOutTicks)

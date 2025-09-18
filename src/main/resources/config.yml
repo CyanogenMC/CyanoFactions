@@ -6,6 +6,9 @@ config-version: ${version}
 # Plugin prefix for messages - supports MiniMessage format
 plugin-prefix: "<dark_gray>[<yellow>CF</yellow><dark_gray>]"
 
+# If set to true, the plugin prefix will be completely disabled for all messages
+disable-prefix: false
+
 # Configure an mysql connection. If no connection was established, the plugin uses sqlite.
 # This allows to use this plugin without a mysql server
 database: "sqlite" # CyanoFactions supports H2, SQLite, and MySQL. H2 and SQLite are local databases
