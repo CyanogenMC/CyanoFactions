@@ -81,6 +81,7 @@ factions:
         - teleport-home
         - set-home
         - set-join-type
+        - set-friendlyfire
         - manage-relation
     Owner:
       priority: 1000
@@ -97,6 +98,7 @@ factions:
         - teleport-home
         - set-home
         - set-join-type
+        - set-friendlyfire
         - manage-relation
 
   #

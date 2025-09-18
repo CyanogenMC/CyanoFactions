@@ -63,6 +63,7 @@ class Faction(id: EntityID<Int>) : IntEntity(id) {
     private var localMaxPower by Factions.maxPower
     private var localFactionJoinType by Factions.factionJoinType
     var description by Factions.description
+    var friendlyfire by Factions.friendlyfire
 
     val maxPower
         get() = localMaxPower

@@ -8,6 +8,7 @@ import io.github.toberocat.improvedfactions.commands.processor.baseCommandProces
 import io.github.toberocat.improvedfactions.config.ImprovedFactionsConfig
 import io.github.toberocat.improvedfactions.database.DatabaseConnector
 import io.github.toberocat.improvedfactions.integrations.Integrations
+import io.github.toberocat.improvedfactions.listeners.FriendlyFireListener
 import io.github.toberocat.improvedfactions.listeners.PlayerJoinListener
 import io.github.toberocat.improvedfactions.listeners.move.MoveListener
 import io.github.toberocat.improvedfactions.modules.Module
@@ -46,7 +47,7 @@ object BaseModule : Module {
 
         copyFolders()
 
-        plugin.registerListeners(MoveListener(), PlayerJoinListener())
+        plugin.registerListeners(MoveListener(), PlayerJoinListener(), FriendlyFireListener())
 
         integrations = Integrations(plugin)
         updateLanguages(plugin)

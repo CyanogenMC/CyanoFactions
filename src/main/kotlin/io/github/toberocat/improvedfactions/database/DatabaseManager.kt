@@ -31,19 +31,21 @@ object DatabaseManager {
     fun initializeDatabase() {
         loggedTransaction {
             createTables(
-                FactionUsers,
-                FactionClaims,
-                FactionPermissions,
-                FactionBans,
-                PlayerUsageLimits,
-                Factions,
-                FactionRanks,
-                FactionInvites,
-                KnownOfflinePlayers,
-                Clusters,
-                FactionClusters,
-                ZoneClusters
+                    FactionUsers,
+                    FactionClaims,
+                    FactionPermissions,
+                    FactionBans,
+                    PlayerUsageLimits,
+                    Factions,
+                    FactionRanks,
+                    FactionInvites,
+                    KnownOfflinePlayers,
+                    Clusters,
+                    FactionClusters,
+                    ZoneClusters
             )
+
+            runMigrations()
 
             Factions.handleQueues()
             FactionRankHandler.initRanks()
@@ -51,6 +53,36 @@ object DatabaseManager {
         }
     }
 
-    fun createTables(vararg tables: Table) =
-        SchemaUtils.create(*tables)
+    fun createTables(vararg tables: Table) = SchemaUtils.create(*tables)
+
+    private fun Transaction.runMigrations() {
+        try {
+            val addColumnsStatements =
+                    SchemaUtils.addMissingColumnsStatements(
+                            FactionUsers,
+                            FactionClaims,
+                            FactionPermissions,
+                            FactionBans,
+                            PlayerUsageLimits,
+                            Factions,
+                            FactionRanks,
+                            FactionInvites,
+                            KnownOfflinePlayers,
+                            Clusters,
+                            FactionClusters,
+                            ZoneClusters
+                    )
+
+            addColumnsStatements.forEach { statement ->
+                try {
+                    exec(statement)
+                } catch (e: Exception) {
+                    println("Migration statement failed (this may be expected): $statement")
+                    println("Error: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            println("Error during migration: ${e.message}")
+        }
+    }
 }

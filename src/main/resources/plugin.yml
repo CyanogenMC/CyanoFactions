@@ -57,6 +57,8 @@ permissions:
     default: true
   factions.commands.setdesc: 
     default: true
+  factions.commands.friendlyfire: 
+    default: true
   factions.commands.icon: 
     default: true
   factions.commands.joinmode: 
@@ -146,6 +148,7 @@ permissions:
       factions.commands.create: true
       factions.commands.delete: true
       factions.commands.setdesc: true
+      factions.commands.friendlyfire: true
       factions.commands.icon: true
       factions.commands.joinmode: true
       factions.commands.rename: true

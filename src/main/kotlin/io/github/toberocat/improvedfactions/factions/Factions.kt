@@ -15,9 +15,10 @@ object Factions : IntIdTable("factions") {
     val maxPower = integer("max_power").default(50)
     val defaultRank = integer("default_rank").default(FactionRankHandler.guestRankId)
     val base64Icon = varchar("icon_base64", BaseModule.config.maxFactionIconLength).nullable()
-    val factionJoinType = enumeration("join_type", FactionJoinType::class)
-        .default(FactionJoinType.INVITE_ONLY)
+    val factionJoinType =
+            enumeration("join_type", FactionJoinType::class).default(FactionJoinType.INVITE_ONLY)
     val description = varchar("description", 255).default("")
+    val friendlyfire = bool("friendlyfire").default(false)
 
     fun handleQueues() {
         Faction.all().forEach { FactionHandler.createListenersFor(it) }

@@ -5,27 +5,25 @@ import io.github.toberocat.improvedfactions.annotations.command.CommandResponse
 import io.github.toberocat.improvedfactions.annotations.command.GeneratedCommandMeta
 import io.github.toberocat.improvedfactions.commands.CommandProcessResult
 import io.github.toberocat.improvedfactions.commands.sendCommandResult
-import io.github.toberocat.improvedfactions.database.DatabaseManager.loggedTransaction
 import io.github.toberocat.improvedfactions.factions.Faction
 import io.github.toberocat.improvedfactions.modules.power.PowerRaidsModule
 import io.github.toberocat.improvedfactions.modules.relations.RelationsModule
 import io.github.toberocat.improvedfactions.modules.relations.RelationsModule.allies
 import io.github.toberocat.improvedfactions.modules.relations.RelationsModule.enemies
 import io.github.toberocat.improvedfactions.ranks.listRanks
-import io.github.toberocat.improvedfactions.translation.sendLocalized
 import io.github.toberocat.improvedfactions.user.factionUser
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @GeneratedCommandMeta(
-    label = "info",
-    category = CommandCategory.GENERAL_CATEGORY,
-    module = "base",
-    responses = [
-        CommandResponse("infoHeader"),
-        CommandResponse("infoDetail"),
-        CommandResponse("noFactionFound")
-    ]
+        label = "info",
+        category = CommandCategory.GENERAL_CATEGORY,
+        module = "base",
+        responses =
+                [
+                        CommandResponse("infoHeader"),
+                        CommandResponse("infoDetail"),
+                        CommandResponse("noFactionFound")]
 )
 abstract class InfoCommand : InfoCommandContext() {
 
@@ -51,17 +49,23 @@ abstract class InfoCommand : InfoCommandContext() {
             sender.sendCommandResult("Enemies", faction.enemies().count().toString(), "/f enemies")
         }
 
-        sender.sendCommandResult("Description", if (faction.description.isNotEmpty()) faction.description else "No description set", "/f setdesc")
+        sender.sendCommandResult(
+                "Description",
+                if (faction.description.isNotEmpty()) faction.description else "No description set",
+                "/f setdesc"
+        )
 
-        return showDetails("Join Type", faction.factionJoinType.name.lowercase())
+        sender.sendCommandResult("Join Type", faction.factionJoinType.name.lowercase())
+        return showDetails(
+                "Friendly Fire",
+                if (faction.friendlyfire) "enabled" else "disabled",
+                "/f friendlyfire"
+        )
     }
 
     private fun CommandSender.sendCommandResult(key: String, value: String, cmd: String = "") =
-        sendCommandResult(showDetails(key, value, cmd))
+            sendCommandResult(showDetails(key, value, cmd))
 
-    private fun showDetails(key: String, value: String, cmd: String = "") = infoDetail(
-        "cmd" to cmd,
-        "key" to key,
-        "value" to value
-    )
+    private fun showDetails(key: String, value: String, cmd: String = "") =
+            infoDetail("cmd" to cmd, "key" to key, "value" to value)
 }

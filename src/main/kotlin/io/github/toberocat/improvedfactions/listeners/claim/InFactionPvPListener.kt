@@ -14,10 +14,16 @@ class InFactionPvPListener(zoneType: String) : ProtectionListener(zoneType) {
     fun pvp(event: EntityDamageByEntityEvent) = loggedTransaction {
         val damaged = event.entity as? Player
         val damager = event.damager as? Player
-        if (damaged == null || damager == null || damaged.location.getFactionClaim()?.zoneType != zoneType)
-            return@loggedTransaction
+        if (damaged == null ||
+                        damager == null ||
+                        damaged.location.getFactionClaim()?.zoneType != zoneType
+        )
+                return@loggedTransaction
         if (damager.factionUser().factionId != damaged.factionUser().factionId)
-            return@loggedTransaction
+                return@loggedTransaction
+
+        // Note: Global friendly fire is handled by FriendlyFireListener
+        // This listener only handles in-faction PvP prevention in claims where it's configured
         event.isCancelled = true
     }
 }
